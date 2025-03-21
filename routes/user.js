@@ -6,7 +6,7 @@ const { authenticateToken } = require('./userAuth');
 
 router.post('/sign-up', async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
+        const { username, email, password } = req.body;
         console.log('detail', username, email, password, role);
         if (username.length <= 4) return res.status(400).json({ message: "Username length should be greater than 3" });
 
@@ -20,7 +20,7 @@ router.post('/sign-up', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const newUser = new User({ username: username, email: email, password: hashedPassword, role: role });
+        const newUser = new User({ username: username, email: email, password: hashedPassword });
         await newUser.save();
 
         return res.status(200).json({ message: "Signed up successfully" });
