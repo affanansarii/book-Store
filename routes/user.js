@@ -7,7 +7,6 @@ const { authenticateToken } = require('./userAuth');
 router.post('/sign-up', async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        console.log('detail', username, email, password, role);
         if (username.length <= 4) return res.status(400).json({ message: "Username length should be greater than 3" });
 
         const existingUsername = await User.findOne({ username: username });
@@ -40,9 +39,8 @@ router.post('/sign-in', async (req, res) => {
         await bcrypt.compare(password, existingUser.password, (err, data) => {
             if (data) {
                 const authClaims = [{ name: existingUser.username }, { role: existingUser.role }]
-                const token = jwt.sign({ authClaims }, "librarystore123", { expiresIn: '30d' })
+                const token = jwt.sign({ authClaims }, "library123", { expiresIn: '30d' })
                 res.status(200).json({ id: existingUser._id, role: existingUser.role, token: token });
-                console.log(existingUser.role);
             } else {
                 res.status(400).json({ message: "Invalid credentials" });
             }
