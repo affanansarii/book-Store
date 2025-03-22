@@ -8,15 +8,12 @@ router.post('/sign-up', async (req, res) => {
     try {
         const { username, email, password, role } = req.body;
         console.log('detail', username, email, password, role);
-        if (username.length <= 4) return res.status(400).json({ message: "Username length should be greater than 3" });
 
         const existingUsername = await User.findOne({ username: username });
         if (existingUsername) return res.status(400).json({ message: "Username already exists" });
 
         const existingEmail = await User.findOne({ email: email });
         if (existingEmail) return res.status(400).json({ message: "Email already exists" });
-
-        if (password <= 5) return res.status(400).json({ message: "Password length should be greater than 5" });
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -26,7 +23,7 @@ router.post('/sign-up', async (req, res) => {
         return res.status(200).json({ message: "Signed up successfully" });
 
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error?.res?.message });
     }
 })
 
