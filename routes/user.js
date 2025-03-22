@@ -6,7 +6,8 @@ const { authenticateToken } = require('./userAuth');
 
 router.post('/sign-up', async (req, res) => {
     try {
-        const { username, email, password } = req.body;
+        const { username, email, password, role } = req.body;
+        console.log('detail', username, email, password, role);
         if (username.length <= 4) return res.status(400).json({ message: "Username length should be greater than 3" });
 
         const existingUsername = await User.findOne({ username: username });
@@ -19,7 +20,7 @@ router.post('/sign-up', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const newUser = new User({ username: username, email: email, password: hashedPassword });
+        const newUser = new User({ username: username, email: email, password: hashedPassword, role: role });
         await newUser.save();
 
         return res.status(200).json({ message: "Signed up successfully" });
@@ -41,6 +42,7 @@ router.post('/sign-in', async (req, res) => {
                 const authClaims = [{ name: existingUser.username }, { role: existingUser.role }]
                 const token = jwt.sign({ authClaims }, "library123", { expiresIn: '30d' })
                 res.status(200).json({ id: existingUser._id, role: existingUser.role, token: token });
+                console.log(existingUser.role);
             } else {
                 res.status(400).json({ message: "Invalid credentials" });
             }
